@@ -133,10 +133,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--desc', type=str, help="Description")
     parser.add_argument('--dataset', type=str)
-    parser.add_argument('--log_dir', type=str, default='log/')
-    parser.add_argument('--save_dir', type=str, default='save/')
-    parser.add_argument('--data_dir', type=str, default='data/')
-    parser.add_argument('--submission_dir', type=str, default='submission/')
+    parser.add_argument('--log_dir', type=str, default='../log/')
+    parser.add_argument('--save_dir', type=str, default='../save/')
+    parser.add_argument('--data_dir', type=str, default='../datasets/')
+    parser.add_argument('--submission_dir', type=str, default='../submission/')
     parser.add_argument('--submit', action='store_true')
     parser.add_argument('--analysis', action='store_true')
     parser.add_argument('--seed', type=int, default=42)
@@ -158,8 +158,8 @@ if __name__ == '__main__':
     parser.add_argument('--opt', type=str, default='adam')
     parser.add_argument('--afn', type=str, default='gelu')
     parser.add_argument('--lr_schedule', type=str, default='warmup_linear')
-    parser.add_argument('--encoder_path', type=str, default='model/encoder_bpe_40000.json')
-    parser.add_argument('--bpe_path', type=str, default='model/vocab_40000.bpe')
+    parser.add_argument('--encoder_path', type=str, default='../model/encoder_bpe_40000.json')
+    parser.add_argument('--bpe_path', type=str, default='../model/vocab_40000.bpe')
     parser.add_argument('--n_transfer', type=int, default=12)
     parser.add_argument('--lm_coef', type=float, default=0.5)
     parser.add_argument('--b1', type=float, default=0.9)
@@ -253,12 +253,12 @@ if __name__ == '__main__':
     if submit:
         path = os.path.join(save_dir, desc, 'best_params')
         torch.save(dh_model.state_dict(), make_path(path))
-    best_score = 0
-    for i in range(args.n_iter):
-        print("running epoch", i)
-        run_epoch()
-        n_epochs += 1
-        log(save_dir, desc)
+    #best_score = 0
+    #for i in range(args.n_iter):
+    #    print("running epoch", i)
+    #    run_epoch()
+    #    n_epochs += 1
+    #    log(save_dir, desc)
     if submit:
         path = os.path.join(save_dir, desc, 'best_params')
         torch_data = torch.load(path)

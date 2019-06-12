@@ -299,7 +299,7 @@ class DoubleHeadModel(nn.Module):
         return lm_logits, task_logits
 
 
-def load_openai_pretrained_model(model, n_ctx=-1, n_special=-1, n_transfer=12, n_embd=768, path='./model/',
+def load_openai_pretrained_model(model, n_ctx=-1, n_special=-1, n_transfer=12, n_embd=768, path='../model/',
                                  path_names='./'):
     # Load weights from TF model
     print("Loading weights...")

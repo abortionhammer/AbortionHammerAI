@@ -70,8 +70,8 @@ def _stance(path, topic=None):
 
 def stance(data_dir, topic=None):
     path = Path(data_dir)
-    trainfile = 'training\training-data.txt'
-    testfile = 'testing\testing-data.txt'
+    trainfile = 'training\\training-data.txt'
+    testfile = 'testing\\testing-data.txt'
 
     X, Y = _stance(path/trainfile, topic=topic)
     teX, _ = _stance(path/testfile, topic=topic)
@@ -93,7 +93,7 @@ def stance(data_dir, topic=None):
 
 if __name__ == "__main__":
     ## Test
-    data_dir = "./data"
+    data_dir = "../datasets"
 
     (trX, trY), (vaX, vaY), teX = stance(data_dir)
 
