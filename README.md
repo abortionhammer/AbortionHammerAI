@@ -4,6 +4,7 @@ AI program that recognizes pro-life content on Twitter and tag the tweets with s
 ## Installation
 In the AbortionHammerAI folder, execute the following commands:
 ```
+python -m venv venv
 venv\Scripts\activate
 cd src
 pip install -r requirements.txt
