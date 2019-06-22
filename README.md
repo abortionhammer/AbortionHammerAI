@@ -8,9 +8,12 @@ python -m venv venv
 venv\Scripts\activate
 cd src
 pip install -r requirements.txt
+
+pip install torch
+OR
 pip install https://download.pytorch.org/whl/cpu/torch-1.0.1-cp36-cp36m-win_amd64.whl (for Windows)
+
 pip install torchvision
-pip install tqdm
 pip install ftfy
 python -m spacy download en
 ```
