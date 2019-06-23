@@ -5,8 +5,10 @@ import sys
 
 from twitter import Api
 
+# #abortionrights #prolife #prochoice #AbortionIsHealthcare #AbortionIsHealthcare #antiabortion
 
-PROLIFE_USERS = ['prolifecampaign','ProLifeAction','AntiAbortionAF']
+
+PROLIFE_USERS = ['prolifecampaign','ProLifeAction','AntiAbortionAF','endthekillingTO','ProLifeAction']
 PROCHOICE_USERS = ['prochoiceMT','Triangle4Choice','ProChoiceOH']
 NEUTRAL_USERS = ['MovingMalteser', 'philtalkradio', '1800PetMeds', 'SMWikiOfficial', 'LitWorks', 'PoetrySociety']
 
@@ -59,7 +61,7 @@ def get_tweets(api=None, screen_name=None, count=200, exclude_replies=True, incl
   return timeline
   
 
-# Download the tweets from pro-life users:
+# Download the tweets from users:
 def download_tweets(users_to_watch, stance, file_mode="w", min_chars=75):
   for screen_name in users_to_watch:
     tweets = get_tweets(api=api, screen_name=screen_name)
@@ -75,6 +77,24 @@ def download_tweets(users_to_watch, stance, file_mode="w", min_chars=75):
         if len(tw_text) >= min_chars:
           f.write('\t'.join([tw_id, "Legalization of Abortion", tw_text, stance]))	
           f.write('\n')
+		  
+		  
+def download_tweets2(users_to_watch, stance, file_mode="w", min_chars=75):
+  for screen_name in users_to_watch:
+    tweets = get_tweets(api=api, screen_name=screen_name)
+    with open(tweets_search_file, file_mode, encoding="utf-8") as f:
+      for tweet in tweets:
+        line = tweet._json
+        tw_created_at = line['created_at']
+        tw_id = str(line['id'])[-5:]
+        tw_user_id = str(line['user']['id'])
+        tw_user_screen_name = line['user']['screen_name']
+		# Structure the tweets for the machine learning:
+        tw_text = clean_tweet(line['full_text'])
+        if len(tw_text) >= min_chars:
+          f.write('"')
+          f.write('","'.join([tw_id, "Legalization of Abortion", tw_text.replace('"', "'"), stance]))	
+          f.write('"\n')		  
 		
 
 # Stream tweets in real-time:
@@ -103,8 +123,8 @@ def clean_tweet(tweet):
 
 if __name__ == '__main__':
   if "download" in sys.argv:
-    #download_tweets(PROLIFE_USERS, "AGAINST", "a")
-    #download_tweets(PROCHOICE_USERS, "FAVOR", "a")
-    download_tweets(NEUTRAL_USERS, "NONE", "a")
+    download_tweets2(PROLIFE_USERS, "AGAINST", "a")
+    download_tweets2(PROCHOICE_USERS, "FAVOR", "a")
+    download_tweets2(NEUTRAL_USERS, "NONE", "a")
   elif "stream" in sys.argv:
     stream_tweets()

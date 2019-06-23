@@ -34,8 +34,7 @@ def shuffle(dataset_file_path, output_file_path):
     for line in lines:
       fw.write(line)	
 	
+	
 #export_characters_diversity("../datasets/tweets/semeval-favor-against-none.txt", "../datasets/tweets/characters.txt")
-
 #regenerate_ids("../datasets/tweets/semeval-favor-against-none.txt", "../datasets/tweets/semeval-favor-against-none-new-ids.txt")
-
-shuffle("../datasets/tweets/semeval-favor-against-none-new-ids.txt", "../datasets/tweets/semeval-favor-against-none-shuffled.txt")
+#shuffle("../datasets/tweets/semeval-favor-against-none-new-ids.txt", "../datasets/tweets/semeval-favor-against-none-shuffled.txt")
