@@ -17,7 +17,7 @@ python -m spacy download en
 ```
 
 ## Tweets Download
-The file **src/download-tweets.py** contains several functions to download/stream tweets.
+The file **src/download-tweets.py** contains several functions to download/stream tweets.  
 Before using it, please create the configuration file **config/userinfo.txt** structured this way:
 ```
 Twitter consumer key
@@ -28,9 +28,9 @@ Twitter oauth callback url (urlencoded)
 ```
 
 ## Datasets
-The datasets used by the program are:
+The datasets used by the program are:  
 Dataset | File Path
-------- | ---------
+--- | ---
 Training | datasets/training/training-data.txt
 Testing | datasets/testing/testing-data.txt
 
@@ -55,7 +55,7 @@ The predicted stances of the testing dataset will be written in the file **resul
 ... under construction ...
 
 ## References
-Transfer Learning in NLP for Tweet Stance Classification, by Prashanth Rao, 15 January 2019
-https://towardsdatascience.com/transfer-learning-in-nlp-for-tweet-stance-classification-8ab014da8dde
-Related GitHub repository:
-https://github.com/prrao87/tweet-stance-prediction
+Transfer Learning in NLP for Tweet Stance Classification, by Prashanth Rao, 15 January 2019  
+https://towardsdatascience.com/transfer-learning-in-nlp-for-tweet-stance-classification-8ab014da8dde  
+Related GitHub repository:  
+https://github.com/prrao87/tweet-stance-prediction  
