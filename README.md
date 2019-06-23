@@ -29,10 +29,8 @@ Twitter oauth callback url (urlencoded)
 
 ## Datasets
 The datasets used by the program are:  
-Dataset | File Path
---- | ---
-Training | datasets/training/training-data.txt
-Testing | datasets/testing/testing-data.txt
+**Training** - datasets/training/training-data.txt  
+**Testing** - datasets/testing/testing-data.txt  
 
 
 ## Train Model
