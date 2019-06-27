@@ -20,7 +20,7 @@ This implementation thus also comprises a modified Adam optimization algorithm a
 To use the model it-self by importing [model_pytorch.py](model_pytorch.py), you just need:
 - PyTorch (version >=0.4)
 
-To run the classifier training script in [train.py](train.py) you will need in addition:
+To run the classifier training script in [train.py](train.py), you will also need:
 - tqdm
 - sklearn
 - spacy
