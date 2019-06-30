@@ -23,10 +23,15 @@ from utils import (encode_dataset, iter_data,
 from loss import ClassificationLossCompute, MultipleChoiceLossCompute
 
 
-# Extract, clean and transforms values from a dataset:
 def _stance(path):
+    """Extract, clean and transforms values in a dataset.
+	
+	Parameters:
+	-----------
+	path	File path of the dataset to process.
+	"""
     def clean_ascii(text):
-        # function to remove non-ASCII chars from data
+        """Remove non-ASCII chars from data."""
         return ''.join(i for i in text if ord(i) < 128)
     orig = pd.read_csv(path, delimiter='\t', header=0, encoding = "latin-1")
     orig['Tweet'] = orig['Tweet'].apply(clean_ascii)
@@ -38,8 +43,15 @@ def _stance(path):
     return X, Y
 
 
-# Extract the training, validation and testing data from the training and testing datasets:
 def stance(data_dir, trainfile, testfile):
+    """Split raw tweet data into training, validation and test sets.
+	
+	Parameters:
+	-----------
+	data_dir	Directory containing the different datasets.
+	trainfile	Training dataset file.
+	testfile	Testing dataset file.
+	"""
     path = Path(data_dir)
 
     X, Y = _stance(path/trainfile)
@@ -62,6 +74,12 @@ def stance(data_dir, trainfile, testfile):
 
 
 def transform_stance(X1):
+    """Apply word embedding on an encoded dataset.
+	
+	Parameters:
+	-----------
+	X1	The encoded dataset.
+	"""
     n_batch = len(X1)
     xmb = np.zeros((n_batch, 1, n_ctx, 2), dtype=np.int32)
     mmb = np.zeros((n_batch, 1, n_ctx), dtype=np.float32)
@@ -71,13 +89,20 @@ def transform_stance(X1):
         l12 = len(x12)
         xmb[i, 0, :l12, 0] = x12
         mmb[i, 0, :l12] = 1
-    # Position information that is added to the input embeddings in the TransformerModel
+    # Position information that is added to the input embeddings in the TransformerModel:
     xmb[:, :, :, 1] = np.arange(n_vocab + n_special, n_vocab + n_special + n_ctx)
     return xmb, mmb
 
 
 def iter_apply(Xs, Ms, Ys):
-    # fns = [lambda x: np.concatenate(x, 0), lambda x: float(np.sum(x))]
+    """Return the cost and the logits out of the inputs, the word-embedded inputs and the outputs.
+	
+	Parameters:
+	-----------
+	Xs	Inputs (encoded tweets).
+	Ms	Word-embedded inputs.
+	Ys	Outputs (stance).
+	"""
     logits = []
     cost = 0
     with torch.no_grad():
@@ -98,6 +123,13 @@ def iter_apply(Xs, Ms, Ys):
 
 
 def iter_predict(Xs, Ms):
+    """Predict the stance out of the inputs and word-embedded inputs --> returns logits.
+	
+	Parameters:
+	-----------
+	Xs	Inputs.
+	Ms	Worded-embedded inputs.
+	"""
     logits = []
     with torch.no_grad():
         dh_model.eval()
@@ -111,7 +143,16 @@ def iter_predict(Xs, Ms):
     return logits
 
 
-def log(save_dir):
+def log(save_dir, best_params_file):
+    """Compute the accuracy score and log it along with the parameters of the trained model.
+	If we choose to make predictions of the testing dataset (using --submit), then save the best parameters
+	of the current epoch into the best parameters file.
+	
+	Parameters:
+	-----------
+	save_dir			Directory into which the trained model best parameters will be saved.
+	best_params_file	File name of the file that contains the trained model best parameters.
+	"""
     global best_score
     print("Logging")
     tr_logits, tr_cost = iter_apply(trX[:n_valid], trM[:n_valid], trY[:n_valid])
@@ -126,12 +167,18 @@ def log(save_dir):
         score = va_acc
         if score > best_score:
             best_score = score
-            path = os.path.join(save_dir, 'best_params')
+            path = os.path.join(save_dir, best_params_file)
             torch.save(dh_model.state_dict(), make_path(path))
 
 
-# Make predictions and write them to a TSV target file:
 def predict(submission_dir, filename):
+    """Perform predictions and write them to a TSV target file.
+	
+	Parameters:
+	-----------
+	submission_dir	Directory of the TSV predictions file.
+	filename		Name of the TSV file.
+	"""
     pred_fn = argmax
     label_decoder = None
     predictions = pred_fn(iter_predict(teX, teM))
@@ -146,6 +193,7 @@ def predict(submission_dir, filename):
 
 
 def run_epoch():
+    """Run a training epoch."""
     for xmb, mmb, ymb in iter_data(*shuffle(trX, trM, trYt, random_state=np.random),
                                    n_batch=n_batch_train, truncate=True, verbose=True):
         global n_updates
@@ -161,11 +209,21 @@ def run_epoch():
 			
 
 def output_predictions(data_dir, test_file, submission_dir, pred_file, out_path):
+    """Write the prediction file with stance labels (i/o numbers) from the TSV predictions file.
+	
+	Parameters:
+	-----------
+	data_dir		Directory containing the different datasets.
+	test_file		Testing dataset file.
+	submission_dir	Directory containing the TSV predictions file.
+	pred_file		Name of the TSV predictions file.
+	out_path		Target file path that will contain the predictions with the labels.
+	"""
     test_path = os.path.join(data_dir, test_file)
     pred_path = os.path.join(submission_dir, pred_file)
     test = pd.read_csv(test_path, delimiter='\t', header=0, encoding = "latin-1")
     def clean_ascii(text):
-        # function to remove non-ASCII chars from data
+        """Remove non-ASCII chars from data."""
         return ''.join(i for i in text if ord(i) < 128)
     test['Tweet'] = test['Tweet'].apply(clean_ascii)
     print(test)
@@ -182,10 +240,14 @@ def output_predictions(data_dir, test_file, submission_dir, pred_file, out_path)
 
 
 def show_score_model(data_dir, gold_file, predictionsfile_path):
-    count_false_negatives = 0
-    count_false_positives = 0
-    count_true_negatives = 0
-    count_true_positives = 0
+    """Print the score of the trained model and plot a confusion matrix.
+	
+	Parameters:
+	-----------
+	data_dir				Directory that contains the different datasets.
+	gold_file				File that contains the tweets of the testing dataset with the correct labels in order to score the trained model.
+	predictionsfile_path	File path that contains the predicted stances of the testing dataset.
+	"""
     goldfile_path = os.path.join(data_dir, gold_file)
     with open(predictionsfile_path, 'r') as fp:
         with open(goldfile_path, 'r') as fg:
@@ -223,7 +285,7 @@ def show_score_model(data_dir, gold_file, predictionsfile_path):
 argmax = lambda x: np.argmax(x, 1)
 
 if __name__ == '__main__':
-	# Parse the arguments passed to the program:
+	# Parse the arguments passed to the program and print them:
     parser = argparse.ArgumentParser()
     parser.add_argument('--submit', action='store_true')
     parser.add_argument('--train_model', action='store_true')
@@ -257,12 +319,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
+    # Initialize the seed of the model:
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
 
-    # Constants
+    # Constants:
     submit = args.submit
     train_model  = args.train_model
     score_model  = args.score_model
@@ -282,15 +345,20 @@ if __name__ == '__main__':
     out_path = "../results/predicted.txt"	
 
     if train_model or submit:
+	    # If Cuda is available then train the model using the GPU, otherwise the CPU:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         n_gpu = torch.cuda.device_count()
         print("device", device, "n_gpu", n_gpu)
-        
+
+        # Initialize the logger:
         logger = ResultLogger(path=os.path.join(log_dir, '{}.jsonl'.format(desc)), **args.__dict__)
+
+        # Initialize the text encoder with the vocabulary and encoder file:
         text_encoder = TextEncoder(encoder_path, bpe_path)
         encoder = text_encoder.encoder
         n_vocab = len(text_encoder.encoder)
         
+        # Encode the different datasets using the text encoders:
         print("Encoding dataset...")
         ((trX, trY), (vaX, vaY), (teX, )) = encode_dataset(*stance(data_dir, train_file, test_file),
          encoder=text_encoder)
@@ -301,20 +369,23 @@ if __name__ == '__main__':
         n_special = 2
         max_len = n_ctx - 2
         
-        # Define maximum context as the minimum of [512, x] where x is the max sentence length
+        # Define maximum context as the minimum of [512, x] where x is the max sentence length:
         n_ctx = min(max(
         [len(x[:max_len]) for x in trX]
         + [len(x[:max_len]) for x in vaX]
         + [len(x[:max_len]) for x in teX]
         ) + 3, n_ctx)
         
+        # Apply word embedding on the training and validation datasets:
         vocab = n_vocab + n_special + n_ctx
         trX, trM = transform_stance(trX)
         vaX, vaM = transform_stance(vaX)
         
+		# Apply word embedding to the testing dataset if we want to make predictions using the trained model:
         if submit:
             teX, teM = transform_stance(teX)
         
+		# Initialize the parameters and load the pre-trained model that will be use to train the main model:
         n_train = len(trY)
         n_valid = len(vaY)
         n_batch_train = args.n_batch * max(n_gpu, 1)
@@ -356,7 +427,7 @@ if __name__ == '__main__':
             print("running epoch", i)
             run_epoch()
             n_epochs += 1
-            log(save_dir)	
+            log(save_dir, best_params_filename)	
 
     # Make predictions based on the trained model:
     if submit:
@@ -365,7 +436,8 @@ if __name__ == '__main__':
         print(torch_data)
         dh_model.load_state_dict(torch_data)
         predict(submission_dir, predictions_filename)
-        output_predictions(data_dir, test_file, save_dir, predictions_filename, out_path)
+        output_predictions(data_dir, test_file, submission_dir, predictions_filename, out_path)
 
+    # Compare the predictions with the gold file and display a score and a confusion matrix the trained model:
     if score_model:
         show_score_model(data_dir, gold_file, out_path)	
