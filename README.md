@@ -4,8 +4,9 @@ AI program that recognizes pro-life content on Twitter and tag the tweets with s
 ## Installation
 In the AbortionHammerAI folder, execute the following commands:
 ```
-python -m venv venv
-venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate (Linux)
+venv\Scripts\activate (Windows)
 cd src
 pip install -r requirements.txt
 pip install -r pytorch-requirements.txt
@@ -13,7 +14,7 @@ pip install -r pytorch-requirements.txt
 Torch for Windows:
 pip install https://download.pytorch.org/whl/cpu/torch-1.0.1-cp36-cp36m-win_amd64.whl (or other version)
 
-python -m spacy download en
+python3 -m spacy download en
 ```
 
 ## Tweets Download
