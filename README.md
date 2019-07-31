@@ -37,7 +37,7 @@ The datasets used by the program are:
 ## Train Model
 Use this command to train the model:
 ```
-python train_stance.py --train_model
+python3 train_stance.py --train_model
 ```
 It will create a file **save/best_params** that contains the trained weights.
 
@@ -47,14 +47,14 @@ It will create a file **save/best_params** that contains the trained weights.
 ## Predict
 Predict the stances of the testing dataset:
 ```
-python train_stance.py --submit
+python3 train_stance.py --submit
 ```
 The predicted stances of the testing dataset will be written in the file **results/predicted.txt**.
 
 ## Score Model
 Once that the stances are predicted, you can run the following command to display the precision, recall, F-score and support and plot the confusion matrix:
 ```
-python train_stance.py --score_model
+python3 train_stance.py --score_model
 ```
 
 ... under construction ...
